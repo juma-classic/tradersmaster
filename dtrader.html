@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTrader - Manual Trading Platform</title>
+    <link href="manifest.json" rel="manifest" crossorigin="use-credentials">
+    <link href="favicon.ico" rel="icon">
+    
+    <!-- DTrader Styles -->
+    <link href="css/core.mainA.e7365dd7f3682a8b625c.main.css" rel="stylesheet">
+    <link href="css/core.maini.443df40efbd4f46f9d3b.main.css" rel="stylesheet">
+    
+    <style>
+        /* DTrader specific styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0e0e0e;
+            color: #ffffff;
+            overflow: hidden;
+        }
+        
+        .dtrader-container {
+            display: grid;
+            grid-template-areas: 
+                "header header header"
+                "sidebar chart trade-panel"
+                "positions chart trade-panel";
+            grid-template-columns: 250px 1fr 320px;
+            grid-template-rows: 60px 1fr auto;
+            height: 100vh;
+            background: #0e0e0e;
+        }
+        
+        .dtrader-header {
+            grid-area: header;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .logo {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ff444f;
+        }
+        
+        .platform-info {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .balance-info {
+            background: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .account-status {
+            color: #4bb543;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .dtrader-sidebar {
+            grid-area: sidebar;
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-right: 1px solid #333;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .market-item {
+            padding: 0.75rem;
+            background: #333;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .market-item:hover {
+            background: #444;
+            transform: translateX(2px);
+        }
+        
+        .market-item.active {
+            background: #ff444f;
+            color: white;
+        }
+        
+        .dtrader-chart {
+            grid-area: chart;
+            background: #0e0e0e;
+            position: relative;
+            min-height: 400px;
+            border-right: 1px solid #333;
+        }
+        
+        .chart-header {
+            background: #1a1a1a;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .symbol-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .symbol-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .symbol-price {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #4bb543;
+        }
+        
+        .price-change {
+            font-size: 0.9rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: #4bb543;
+            color: white;
+        }
+        
+        .price-change.negative {
+            background: #ff444f;
+        }
+        
+        .chart-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chart-btn {
+            padding: 0.5rem 1rem;
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .chart-btn:hover {
+            background: #444;
+        }
+        
+        .chart-btn.active {
+            background: #ff444f;
+            border-color: #ff444f;
+        }
+        
+        .mock-chart {
+            height: calc(100% - 80px);
+            background: linear-gradient(45deg, #1a1a1a 25%, transparent 25%), 
+                        linear-gradient(-45deg, #1a1a1a 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #1a1a1a 75%), 
+                        linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .chart-placeholder {
+            text-align: center;
+            color: #666;
+        }
+        
+        .chart-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #444;
+        }
+        
+        .dtrader-trade-panel {
+            grid-area: trade-panel;
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-left: 1px solid #333;
+            overflow-y: auto;
+        }
+        
+        .trade-panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .trade-type-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .trade-type-btn {
+            padding: 0.75rem 0.5rem;
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .trade-type-btn:hover {
+            background: #444;
+            border-color: #666;
+        }
+        
+        .trade-type-btn.active {
+            background: #ff444f;
+            border-color: #ff444f;
+            color: white;
+        }
+        
+        .contract-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-size: 0.9rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff444f;
+            box-shadow: 0 0 0 2px rgba(255, 68, 79, 0.2);
+        }
+        
+        .stake-input {
+            position: relative;
+        }
+        
+        .stake-input::before {
+            content: '$';
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ccc;
+            pointer-events: none;
+        }
+        
+        .stake-input input {
+            padding-left: 2rem;
+        }
+        
+        .purchase-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn-higher {
+            background: linear-gradient(135deg, #4bb543, #5cbf47);
+            color: white;
+            border: none;
+            padding: 1.2rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .btn-lower {
+            background: linear-gradient(135deg, #ff444f, #ff5a64);
+            color: white;
+            border: none;
+            padding: 1.2rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .btn-higher:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(75, 181, 67, 0.3);
+        }
+        
+        .btn-lower:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 68, 79, 0.3);
+        }
+        
+        .btn-higher:active,
+        .btn-lower:active {
+            transform: translateY(0);
+        }
+        
+        .payout-info {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .dtrader-positions {
+            grid-area: positions;
+            background: #1a1a1a;
+            padding: 1rem 1.5rem;
+            border-right: 1px solid #333;
+            border-top: 1px solid #333;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .positions-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .position-item {
+            background: #333;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        
+        .position-item:hover {
+            background: #444;
+        }
+        
+        .position-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .position-symbol {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .position-details {
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+        
+        .position-pnl {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .position-pnl.positive {
+            color: #4bb543;
+        }
+        
+        .position-pnl.negative {
+            color: #ff444f;
+        }
+        
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .setting-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #ff444f;
+        }
+        
+        @media (max-width: 1200px) {
+            .dtrader-container {
+                grid-template-areas: 
+                    "header"
+                    "chart"
+                    "trade-panel"
+                    "positions";
+                grid-template-columns: 1fr;
+                grid-template-rows: 60px 300px auto auto;
+            }
+            
+            .dtrader-sidebar {
+                display: none;
+            }
+            
+            .dtrader-trade-panel {
+                border-left: none;
+                border-top: 1px solid #333;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-left .platform-info {
+                display: none;
+            }
+            
+            .purchase-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .trade-type-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dtrader-container">
+        <header class="dtrader-header">
+            <div class="header-left">
+                <div class="logo">📈 DTrader</div>
+                <div class="platform-info">Manual Trading Platform</div>
+            </div>
+            <div class="header-right">
+                <div class="balance-info">
+                    Balance: $10,000.00 USD
+                </div>
+                <div class="account-status">Demo Account</div>
+            </div>
+        </header>
+        
+        <aside class="dtrader-sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">📊 Markets</h3>
+                <div class="market-item active" onclick="selectMarket('forex')">
+                    💱 Forex
+                </div>
+                <div class="market-item" onclick="selectMarket('indices')">
+                    📈 Indices
+                </div>
+                <div class="market-item" onclick="selectMarket('crypto')">
+                    🪙 Cryptocurrencies
+                </div>
+                <div class="market-item" onclick="selectMarket('commodities')">
+                    🛢️ Commodities
+                </div>
+                <div class="market-item" onclick="selectMarket('stocks')">
+                    📊 Stocks
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">⚙️ Settings</h3>
+                <div class="settings-group">
+                    <label class="setting-item">
+                        <input type="checkbox" checked> Sound alerts
+                    </label>
+                    <label class="setting-item">
+                        <input type="checkbox" checked> Price notifications
+                    </label>
+                    <label class="setting-item">
+                        <input type="checkbox"> Auto-refresh
+                    </label>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="dtrader-chart">
+            <div class="chart-header">
+                <div class="symbol-info">
+                    <div class="symbol-name">EUR/USD</div>
+                    <div class="symbol-price" id="current-price">1.0845</div>
+                    <div class="price-change" id="price-change">+0.0012 (+0.11%)</div>
+                </div>
+                <div class="chart-controls">
+                    <button class="chart-btn active">1M</button>
+                    <button class="chart-btn">5M</button>
+                    <button class="chart-btn">15M</button>
+                    <button class="chart-btn">1H</button>
+                    <button class="chart-btn">4H</button>
+                    <button class="chart-btn">1D</button>
+                </div>
+            </div>
+            <div class="mock-chart">
+                <div class="chart-placeholder">
+                    <div class="chart-icon">📊</div>
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">DTrader Chart Interface</div>
+                    <div style="font-size: 0.9rem; color: #999;">
+                        Real-time trading chart would be integrated here
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <section class="dtrader-trade-panel">
+            <h3 class="trade-panel-title">💰 Trade</h3>
+            
+            <div class="trade-type-selector">
+                <div class="trade-type-btn active" onclick="selectTradeType('rise-fall')">Rise/Fall</div>
+                <div class="trade-type-btn" onclick="selectTradeType('higher-lower')">Higher/Lower</div>
+                <div class="trade-type-btn" onclick="selectTradeType('touch-no-touch')">Touch/No Touch</div>
+                <div class="trade-type-btn" onclick="selectTradeType('in-out')">In/Out</div>
+            </div>
+            
+            <form class="contract-form">
+                <div class="form-group">
+                    <label>Market</label>
+                    <select id="market-select" onchange="updateMarket()">
+                        <option value="EURUSD">EUR/USD</option>
+                        <option value="GBPUSD">GBP/USD</option>
+                        <option value="USDJPY">USD/JPY</option>
+                        <option value="BTCUSD">BTC/USD</option>
+                        <option value="ETHUSD">ETH/USD</option>
+                        <option value="US30">US 30</option>
+                        <option value="SPX500">S&P 500</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Trade Type</label>
+                    <select id="trade-type-select">
+                        <option value="rise-fall">Rise/Fall</option>
+                        <option value="higher-lower">Higher/Lower</option>
+                        <option value="touch-no-touch">Touch/No Touch</option>
+                        <option value="in-out">In/Out</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Duration</label>
+                    <select id="duration-select" onchange="updatePayout()">
+                        <option value="5t">5 Ticks</option>
+                        <option value="10t">10 Ticks</option>
+                        <option value="1m">1 Minute</option>
+                        <option value="5m">5 Minutes</option>
+                        <option value="15m">15 Minutes</option>
+                        <option value="30m">30 Minutes</option>
+                        <option value="1h">1 Hour</option>
+                        <option value="2h">2 Hours</option>
+                        <option value="4h">4 Hours</option>
+                        <option value="1d">1 Day</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Stake Amount</label>
+                    <div class="stake-input">
+                        <input type="number" id="stake-amount" value="10" min="1" max="1000" onchange="updatePayout()">
+                    </div>
+                </div>
+                
+                <div class="purchase-buttons">
+                    <button type="button" class="btn-higher" onclick="purchaseContract('higher')">
+                        <span>📈 HIGHER</span>
+                        <span class="payout-info" id="higher-payout">Payout: $19.50</span>
+                    </button>
+                    <button type="button" class="btn-lower" onclick="purchaseContract('lower')">
+                        <span>📉 LOWER</span>
+                        <span class="payout-info" id="lower-payout">Payout: $19.50</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+        
+        <section class="dtrader-positions">
+            <h4 class="positions-title">📋 Open Positions</h4>
+            <div id="positionsList">
+                <div class="position-item">
+                    <div class="position-info">
+                        <div class="position-symbol">EUR/USD Rise</div>
+                        <div class="position-details">$10 stake • 5m duration</div>
+                    </div>
+                    <div class="position-pnl positive">+$5.20</div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- DTrader JavaScript -->
+    <script>
+        console.log('📈 DTrader interface loaded');
+        
+        // Market data simulation
+        const marketData = {
+            'EURUSD': { price: 1.0845, change: 0.0012, symbol: 'EUR/USD' },
+            'GBPUSD': { price: 1.2634, change: -0.0023, symbol: 'GBP/USD' },
+            'USDJPY': { price: 149.85, change: 0.45, symbol: 'USD/JPY' },
+            'BTCUSD': { price: 43250.00, change: 1250.00, symbol: 'BTC/USD' },
+            'ETHUSD': { price: 2650.00, change: -45.00, symbol: 'ETH/USD' },
+            'US30': { price: 37850.00, change: 125.00, symbol: 'US 30' },
+            'SPX500': { price: 4785.00, change: 15.50, symbol: 'S&P 500' }
+        };
+        
+        let currentMarket = 'EURUSD';
+        let currentTradeType = 'rise-fall';
+        
+        function selectMarket(marketType) {
+            // Update active market in sidebar
+            document.querySelectorAll('.market-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            console.log(`Selected market category: ${marketType}`);
+        }
+        
+        function selectTradeType(tradeType) {
+            currentTradeType = tradeType;
+            
+            // Update active trade type button
+            document.querySelectorAll('.trade-type-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update trade type select
+            document.getElementById('trade-type-select').value = tradeType;
+            
+            console.log(`Selected trade type: ${tradeType}`);
+        }
+        
+        function updateMarket() {
+            const marketSelect = document.getElementById('market-select');
+            currentMarket = marketSelect.value;
+            const market = marketData[currentMarket];
+            
+            if (market) {
+                // Update chart header
+                document.querySelector('.symbol-name').textContent = market.symbol;
+                document.getElementById('current-price').textContent = market.price.toFixed(market.symbol.includes('JPY') ? 2 : 4);
+                
+                const changeElement = document.getElementById('price-change');
+                const changePercent = ((market.change / market.price) * 100).toFixed(2);
+                const isPositive = market.change > 0;
+                
+                changeElement.textContent = `${isPositive ? '+' : ''}${market.change.toFixed(4)} (${isPositive ? '+' : ''}${changePercent}%)`;
+                changeElement.className = `price-change ${isPositive ? '' : 'negative'}`;
+            }
+            
+            updatePayout();
+        }
+        
+        function updatePayout() {
+            const stake = parseFloat(document.getElementById('stake-amount').value) || 10;
+            const duration = document.getElementById('duration-select').value;
+            
+            // Simple payout calculation (normally would come from API)
+            let multiplier = 1.95;
+            if (duration.includes('t')) multiplier = 1.85; // Ticks have lower payout
+            if (duration.includes('h') || duration.includes('d')) multiplier = 1.98; // Longer durations have higher payout
+            
+            const payout = (stake * multiplier).toFixed(2);
+            
+            document.getElementById('higher-payout').textContent = `Payout: $${payout}`;
+            document.getElementById('lower-payout').textContent = `Payout: $${payout}`;
+        }
+        
+        function purchaseContract(direction) {
+            const market = document.getElementById('market-select').value;
+            const marketInfo = marketData[market];
+            const stake = document.getElementById('stake-amount').value;
+            const duration = document.getElementById('duration-select').value;
+            const tradeType = document.getElementById('trade-type-select').value;
+            
+            // Show purchase confirmation
+            const message = `✅ Contract Purchased!
+            
+Direction: ${direction.toUpperCase()}
+Market: ${marketInfo.symbol}
+Trade Type: ${tradeType.replace('-', '/')}
+Duration: ${duration}
+Stake: $${stake}
+
+This is a demo - no real money involved.`;
+            
+            alert(message);
+            
+            // Add to positions list
+            addPosition(marketInfo.symbol, direction, stake, duration);
+            
+            console.log('Contract purchased:', {
+                market: marketInfo.symbol,
+                direction,
+                stake,
+                duration,
+                tradeType
+            });
+        }
+        
+        function addPosition(symbol, direction, stake, duration) {
+            const positionsList = document.getElementById('positionsList');
+            const newPosition = document.createElement('div');
+            newPosition.className = 'position-item';
+            
+            // Simulate random P&L
+            const pnl = (Math.random() - 0.5) * stake * 2;
+            const isPositive = pnl > 0;
+            
+            newPosition.innerHTML = `
+                <div class="position-info">
+                    <div class="position-symbol">${symbol} ${direction}</div>
+                    <div class="position-details">$${stake} stake • ${duration} duration</div>
+                </div>
+                <div class="position-pnl ${isPositive ? 'positive' : 'negative'}">
+                    ${isPositive ? '+' : ''}$${Math.abs(pnl).toFixed(2)}
+                </div>
+            `;
+            
+            positionsList.appendChild(newPosition);
+        }
+        
+        // Simulate real-time price updates
+        function updatePrices() {
+            Object.keys(marketData).forEach(market => {
+                const data = marketData[market];
+                const volatility = market.includes('BTC') || market.includes('ETH') ? 0.02 : 0.001;
+                const change = (Math.random() - 0.5) * volatility * data.price;
+                
+                data.price += change;
+                data.change = change;
+                
+                // Update current market display if it matches
+                if (market === currentMarket) {
+                    updateMarket();
+                }
+            });
+        }
+        
+        // Initialize
+        updateMarket();
+        updatePayout();
+        
+        // Start price simulation
+        setInterval(updatePrices, 3000);
+        
+        // Chart timeframe buttons
+        document.querySelectorAll('.chart-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                console.log(`Chart timeframe changed to: ${this.textContent}`);
+            });
+        });
+        
+        console.log('🎯 DTrader fully initialized');
+    </script>
+</body>
+</html>

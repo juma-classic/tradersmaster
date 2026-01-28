@@ -37,6 +37,8 @@ const server = http.createServer((req, res) => {
         pathname = '/status.html';
     } else if (pathname === '/bot' || pathname === '/app') {
         pathname = '/bot.html';
+    } else if (pathname === '/dtrader' || pathname === '/trader') {
+        pathname = '/dtrader.html';
     } else if (pathname === '/fallback') {
         pathname = '/dev-fallback.html';
     } else if (pathname === '/simple' || pathname === '/trading') {
