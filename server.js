@@ -80,6 +80,17 @@ const server = http.createServer((req, res) => {
                 res.end(emptySvg);
                 console.log(`Missing SVG: ${pathname} - served empty SVG`);
                 return;
+            } else if (pathname.includes('api') || pathname.includes('config')) {
+                // Return mock JSON for API endpoints
+                const mockResponse = JSON.stringify({ 
+                    status: 'success', 
+                    data: {}, 
+                    message: 'Mock response for development' 
+                });
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(mockResponse);
+                console.log(`API call: ${pathname} - served mock JSON`);
+                return;
             }
             
             // For other missing files, return 404

@@ -16,6 +16,8 @@ window.DEV_CONFIG = {
 // Override console.error to suppress known missing resource errors
 if (window.DEV_CONFIG.SUPPRESS_MISSING_RESOURCE_ERRORS) {
     const originalError = console.error;
+    const originalWarn = console.warn;
+    
     console.error = function(...args) {
         const message = args.join(' ');
         
@@ -24,14 +26,33 @@ if (window.DEV_CONFIG.SUPPRESS_MISSING_RESOURCE_ERRORS) {
             message.includes('ChunkLoadError') ||
             message.includes('Remote Config Server is out of reach') ||
             message.includes('Loading chunk') ||
-            message.includes('404')) {
-            // Log as warning instead
-            console.warn('DEV: Suppressed error -', ...args);
+            message.includes('404') ||
+            message.includes('The above error occurred in one of your React components') ||
+            message.includes('Unexpected token') ||
+            message.includes('SyntaxError')) {
+            // Log as info instead
+            console.info('DEV: Suppressed error -', ...args);
             return;
         }
         
         // Allow other errors through
         originalError.apply(console, args);
+    };
+    
+    console.warn = function(...args) {
+        const message = args.join(' ');
+        
+        // Suppress known warnings
+        if (message.includes('componentWillMount has been renamed') ||
+            message.includes('Resource size is not correct') ||
+            message.includes('was preloaded using link preload') ||
+            message.includes('Missing JavaScript module loaded')) {
+            // Suppress these warnings
+            return;
+        }
+        
+        // Allow other warnings through
+        originalWarn.apply(console, args);
     };
 }
 
@@ -41,11 +62,24 @@ if (window.DEV_CONFIG.MOCK_API_RESPONSES) {
     const originalFetch = window.fetch;
     window.fetch = function(url, options) {
         // Mock remote config API
-        if (url.includes('remote-config') || url.includes('api.')) {
+        if (url.includes('remote-config') || url.includes('api.') || url.includes('config')) {
             return Promise.resolve({
                 ok: true,
-                json: () => Promise.resolve({ status: 'mocked', data: {} }),
-                text: () => Promise.resolve('{"status":"mocked"}')
+                status: 200,
+                json: () => Promise.resolve({ 
+                    status: 'success', 
+                    data: {
+                        feature_flags: {},
+                        remote_config: {},
+                        settings: {}
+                    },
+                    message: 'Mocked for development'
+                }),
+                text: () => Promise.resolve(JSON.stringify({
+                    status: 'success',
+                    data: {},
+                    message: 'Mocked for development'
+                }))
             });
         }
         
@@ -53,5 +87,23 @@ if (window.DEV_CONFIG.MOCK_API_RESPONSES) {
         return originalFetch.apply(this, arguments);
     };
 }
+
+// Handle chunk loading errors
+window.addEventListener('error', function(event) {
+    if (event.error && event.error.name === 'ChunkLoadError') {
+        console.info('DEV: ChunkLoadError caught and suppressed:', event.error.message);
+        event.preventDefault();
+        return false;
+    }
+});
+
+// Handle unhandled promise rejections
+window.addEventListener('unhandledrejection', function(event) {
+    if (event.reason && event.reason.name === 'ChunkLoadError') {
+        console.info('DEV: ChunkLoadError promise rejection caught and suppressed:', event.reason.message);
+        event.preventDefault();
+        return false;
+    }
+});
 
 console.log('Development configuration loaded:', window.DEV_CONFIG);
