@@ -1,0 +1,12 @@
+{
+  "name": "js-beautify-tool",
+  "version": "1.0.0",
+  "description": "Tool to beautify JavaScript files",
+  "scripts": {
+    "beautify": "node beautify-js.js",
+    "restore": "node restore-js.js"
+  },
+  "devDependencies": {
+    "js-beautify": "^1.14.0"
+  }
+}

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Trading Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .account-info {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .balance {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 1rem;
+            padding: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .chart-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mock-chart {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border: 2px dashed #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #666;
+            border-radius: 8px;
+        }
+        
+        .trading-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        
+        .trade-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select {
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .trade-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-buy {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-buy:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-sell {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-sell:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .positions {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .position-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .profit {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .loss {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .account-info {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🚀 Trading Bot</div>
+        <div class="account-info">
+            <div class="balance">Balance: $10,000 USD</div>
+            <div>Demo Account</div>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <div class="chart-section">
+            <h2>📈 Trading Chart</h2>
+            <div class="mock-chart">
+                <div>
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">📊</div>
+                    <div>Interactive Trading Chart</div>
+                    <div style="font-size: 0.9rem; color: #999; margin-top: 0.5rem;">
+                        (Chart component would be integrated here)
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="trading-panel">
+            <h3>💰 Place Trade</h3>
+            <form class="trade-form" id="tradeForm">
+                <div class="form-group">
+                    <label for="asset">Asset</label>
+                    <select id="asset">
+                        <option value="EURUSD">EUR/USD</option>
+                        <option value="GBPUSD">GBP/USD</option>
+                        <option value="USDJPY">USD/JPY</option>
+                        <option value="BTCUSD">BTC/USD</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount ($)</label>
+                    <input type="number" id="amount" value="10" min="1" max="1000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration">Duration</label>
+                    <select id="duration">
+                        <option value="1m">1 Minute</option>
+                        <option value="5m">5 Minutes</option>
+                        <option value="15m">15 Minutes</option>
+                        <option value="1h">1 Hour</option>
+                    </select>
+                </div>
+                
+                <div class="trade-buttons">
+                    <button type="button" class="btn btn-buy" onclick="placeTrade('buy')">
+                        📈 BUY
+                    </button>
+                    <button type="button" class="btn btn-sell" onclick="placeTrade('sell')">
+                        📉 SELL
+                    </button>
+                </div>
+            </form>
+            
+            <div class="positions">
+                <h4>📋 Open Positions</h4>
+                <div id="positionsList">
+                    <div class="position-item">
+                        <div>
+                            <div>EUR/USD</div>
+                            <div style="font-size: 0.8rem; color: #666;">BUY $10</div>
+                        </div>
+                        <div class="profit">+$2.50</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let positions = [
+            { id: 1, asset: 'EUR/USD', type: 'BUY', amount: 10, profit: 2.50 }
+        ];
+        
+        function placeTrade(type) {
+            const asset = document.getElementById('asset').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const duration = document.getElementById('duration').value;
+            
+            if (amount < 1 || amount > 1000) {
+                alert('Amount must be between $1 and $1000');
+                return;
+            }
+            
+            // Simulate trade placement
+            const newPosition = {
+                id: Date.now(),
+                asset: asset,
+                type: type.toUpperCase(),
+                amount: amount,
+                profit: (Math.random() - 0.5) * amount * 0.5,
+                duration: duration
+            };
+            
+            positions.push(newPosition);
+            updatePositionsList();
+            
+            // Show success message
+            alert(`✅ ${type.toUpperCase()} trade placed!\nAsset: ${asset}\nAmount: $${amount}\nDuration: ${duration}`);
+        }
+        
+        function updatePositionsList() {
+            const list = document.getElementById('positionsList');
+            list.innerHTML = positions.map(pos => `
+                <div class="position-item">
+                    <div>
+                        <div>${pos.asset}</div>
+                        <div style="font-size: 0.8rem; color: #666;">${pos.type} $${pos.amount}</div>
+                    </div>
+                    <div class="${pos.profit >= 0 ? 'profit' : 'loss'}">
+                        ${pos.profit >= 0 ? '+' : ''}$${pos.profit.toFixed(2)}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Simulate real-time updates
+        setInterval(() => {
+            positions.forEach(pos => {
+                pos.profit += (Math.random() - 0.5) * 0.5;
+            });
+            updatePositionsList();
+        }, 3000);
+        
+        console.log('🚀 Simple Trading Interface loaded successfully!');
+    </script>
+</body>
+</html>

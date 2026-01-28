@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Bot - Development Mode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .status {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-ok { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-error { color: #dc3545; }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            text-align: left;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            text-align: left;
+        }
+        
+        .code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚀</div>
+        <h1>Trading Bot - Development Mode</h1>
+        
+        <div class="info-box">
+            <strong>Development Status:</strong> The React application encountered errors due to missing JavaScript modules. This is expected for a scraped application.
+        </div>
+        
+        <div class="status">
+            <h3>📊 Component Status</h3>
+            <div class="status-item">
+                <span>Server</span>
+                <span class="status-ok">✅ Running</span>
+            </div>
+            <div class="status-item">
+                <span>HTML Structure</span>
+                <span class="status-ok">✅ Loaded</span>
+            </div>
+            <div class="status-item">
+                <span>CSS Styles</span>
+                <span class="status-ok">✅ Applied</span>
+            </div>
+            <div class="status-item">
+                <span>JavaScript Modules</span>
+                <span class="status-error">❌ Missing Components</span>
+            </div>
+            <div class="status-item">
+                <span>React Application</span>
+                <span class="status-error">❌ Error Boundary Active</span>
+            </div>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ What's Happening:</strong><br>
+            The React application is trying to load JavaScript modules that weren't included in the scrape. The error boundary is preventing a complete crash and showing this fallback interface instead.
+        </div>
+        
+        <div class="info-box">
+            <strong>🔧 Available Options:</strong><br>
+            • <span class="code">http://localhost:3000</span> - Status dashboard<br>
+            • <span class="code">http://localhost:3000/bot</span> - Main app (may show errors)<br>
+            • Check browser console for detailed error information
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <a href="/" class="btn btn-primary">📊 View Status Dashboard</a>
+            <a href="/bot.html" class="btn btn-secondary">🔄 Try Main App</a>
+        </div>
+        
+        <div style="margin-top: 20px; font-size: 14px; color: #6c757d;">
+            This is a development fallback page. The original trading interface requires additional JavaScript modules that are not available in this scraped version.
+        </div>
+    </div>
+    
+    <script>
+        // Auto-refresh status every 30 seconds
+        setTimeout(() => {
+            console.log('Auto-refreshing status...');
+            window.location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>
