@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
-const PORT = 8000;
+const PORT = process.env.PORT || 3000;
 
 // MIME types for different file extensions
 const mimeTypes = {
@@ -18,6 +18,15 @@ const mimeTypes = {
     '.svg': 'image/svg+xml'
 };
 
+// Create a simple 1x1 transparent PNG for missing images
+const transparentPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg==', 'base64');
+
+// Create empty JS module for missing JavaScript files
+const emptyJsModule = '// Missing module placeholder\nconsole.warn("Missing JavaScript module loaded");';
+
+// Create empty CSS for missing stylesheets
+const emptyCss = '/* Missing CSS file placeholder */';
+
 const server = http.createServer((req, res) => {
     // Parse the URL
     const parsedUrl = url.parse(req.url);
@@ -25,6 +34,8 @@ const server = http.createServer((req, res) => {
     
     // Default to bot.html if accessing root
     if (pathname === '/') {
+        pathname = '/status.html';
+    } else if (pathname === '/bot' || pathname === '/app') {
         pathname = '/bot.html';
     }
     
@@ -35,12 +46,46 @@ const server = http.createServer((req, res) => {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = mimeTypes[ext] || 'application/octet-stream';
     
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
     // Check if file exists
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
-            // File not found
+            // Handle missing files gracefully
+            if (ext === '.js') {
+                // Return empty JavaScript module for missing JS files
+                res.writeHead(200, { 'Content-Type': 'text/javascript' });
+                res.end(emptyJsModule);
+                console.log(`Missing JS file: ${pathname} - served placeholder`);
+                return;
+            } else if (ext === '.css') {
+                // Return empty CSS for missing stylesheets
+                res.writeHead(200, { 'Content-Type': 'text/css' });
+                res.end(emptyCss);
+                console.log(`Missing CSS file: ${pathname} - served placeholder`);
+                return;
+            } else if (ext === '.png' || ext === '.jpg' || ext === '.gif' || ext === '.ico') {
+                // Return transparent PNG for missing images
+                res.writeHead(200, { 'Content-Type': 'image/png' });
+                res.end(transparentPng);
+                console.log(`Missing image: ${pathname} - served transparent placeholder`);
+                return;
+            } else if (ext === '.svg') {
+                // Return empty SVG for missing SVG files
+                const emptySvg = '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"></svg>';
+                res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
+                res.end(emptySvg);
+                console.log(`Missing SVG: ${pathname} - served empty SVG`);
+                return;
+            }
+            
+            // For other missing files, return 404
             res.writeHead(404, { 'Content-Type': 'text/html' });
-            res.end('<h1>404 Not Found</h1>');
+            res.end(`<h1>404 Not Found</h1><p>File not found: ${pathname}</p>`);
+            console.log(`404: ${pathname}`);
             return;
         }
         
@@ -52,11 +97,6 @@ const server = http.createServer((req, res) => {
                 return;
             }
             
-            // Set CORS headers
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-            
             res.writeHead(200, { 'Content-Type': contentType });
             res.end(data);
         });
@@ -66,6 +106,7 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
     console.log('Press Ctrl+C to stop the server');
+    console.log('Note: Missing files will be served as placeholders to prevent errors');
 });
 
 // Handle graceful shutdown

@@ -12,7 +12,7 @@ import sys
 # Change to the directory containing this script
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-PORT = 8000
+PORT = int(os.environ.get('PORT', 3000))
 
 class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
