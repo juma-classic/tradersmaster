@@ -1,0 +1,13 @@
+{
+  "name": "tradermaster-bot",
+  "version": "1.0.0",
+  "description": "Trading bot application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "serve": "python server.py"
+  },
+  "keywords": ["trading", "bot", "deriv"],
+  "author": "",
+  "license": "MIT"
+}
